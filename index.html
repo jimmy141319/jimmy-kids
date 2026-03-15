@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jimmy Kids English</title>
+
+<style>
+body{
+font-family:Arial;
+text-align:center;
+background:#f4f6ff;
+}
+
+h1{
+color:#4a7cff;
+}
+
+.card{
+font-size:70px;
+margin:30px;
+}
+
+button{
+padding:12px 20px;
+font-size:20px;
+margin:10px;
+border:none;
+border-radius:10px;
+background:#4a7cff;
+color:white;
+}
+</style>
+
+</head>
+
+<body>
+
+<h1>Jimmy Kids English</h1>
+
+<div id="game"></div>
+
+<script>
+
+const words=[
+{emoji:"🐱",word:"cat"},
+{emoji:"🐶",word:"dog"},
+{emoji:"🐦",word:"bird"},
+{emoji:"🐟",word:"fish"},
+{emoji:"🐰",word:"rabbit"}
+]
+
+let answer
+
+function newQuestion(){
+
+const q=words[Math.floor(Math.random()*words.length)]
+
+answer=q.word
+
+document.getElementById("game").innerHTML=`
+
+<div class="card">${q.emoji}</div>
+
+<button onclick="check('cat')">cat</button>
+<button onclick="check('dog')">dog</button>
+<button onclick="check('bird')">bird</button>
+<button onclick="check('fish')">fish</button>
+<button onclick="check('rabbit')">rabbit</button>
+
+`
+
+}
+
+function check(w){
+
+if(w==answer){
+alert("Correct!")
+}else{
+alert("Try again")
+}
+
+newQuestion()
+
+}
+
+newQuestion()
+
+</script>
+
+</body>
+</html>
