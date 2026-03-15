@@ -1,92 +1,265 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-Hant">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Jimmy Kids English</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jimmy Kids English</title>
+  <style>
+    body{
+      font-family: Arial, sans-serif;
+      text-align:center;
+      background:#f4f6ff;
+      margin:0;
+      padding:20px;
+      color:#1f2937;
+    }
 
-<style>
-body{
-font-family:Arial;
-text-align:center;
-background:#f4f6ff;
-}
+    h1{
+      color:#4a7cff;
+      font-size:40px;
+      margin:10px 0 0;
+    }
 
-h1{
-color:#4a7cff;
-}
+    #score{
+      font-size:22px;
+      margin-top:10px;
+    }
 
-.card{
-font-size:70px;
-margin:30px;
-}
+    #hint{
+      margin-top:8px;
+      color:#6b7280;
+      font-size:15px;
+    }
 
-button{
-padding:12px 20px;
-font-size:20px;
-margin:10px;
-border:none;
-border-radius:10px;
-background:#4a7cff;
-color:white;
-}
-</style>
+    .card{
+      font-size:90px;
+      margin:36px 0 18px;
+    }
 
+    .buttons{
+      display:flex;
+      flex-wrap:wrap;
+      justify-content:center;
+      gap:14px;
+      max-width:760px;
+      margin:0 auto;
+    }
+
+    button{
+      padding:14px 22px;
+      font-size:20px;
+      border:none;
+      border-radius:14px;
+      background:#4a7cff;
+      color:white;
+      min-width:120px;
+      cursor:pointer;
+    }
+
+    .speak-btn{
+      background:#10b981;
+      margin:10px 0 20px;
+    }
+
+    .top-row{
+      display:flex;
+      justify-content:center;
+      gap:12px;
+      flex-wrap:wrap;
+      margin:10px 0 20px;
+    }
+  </style>
 </head>
-
 <body>
 
-<h1>Jimmy Kids English</h1>
+  <h1>Jimmy Kids English</h1>
+  <div id="score">Score: 0</div>
+  <div id="hint">點綠色按鈕可聽發音，選正確答案後會再念一次。</div>
 
-<div id="game"></div>
+  <div id="game"></div>
 
-<script>
+  <script>
+    const words = [
+      {emoji:"🐱",word:"cat"},
+      {emoji:"🐶",word:"dog"},
+      {emoji:"🐦",word:"bird"},
+      {emoji:"🐟",word:"fish"},
+      {emoji:"🐰",word:"rabbit"},
+      {emoji:"🦆",word:"duck"},
+      {emoji:"🐷",word:"pig"},
+      {emoji:"🐮",word:"cow"},
+      {emoji:"🐴",word:"horse"},
+      {emoji:"🐑",word:"sheep"},
 
-const words=[
-{emoji:"🐱",word:"cat"},
-{emoji:"🐶",word:"dog"},
-{emoji:"🐦",word:"bird"},
-{emoji:"🐟",word:"fish"},
-{emoji:"🐰",word:"rabbit"}
-]
+      {emoji:"🍎",word:"apple"},
+      {emoji:"🍌",word:"banana"},
+      {emoji:"🍊",word:"orange"},
+      {emoji:"🍇",word:"grape"},
+      {emoji:"🍓",word:"strawberry"},
+      {emoji:"🍉",word:"watermelon"},
+      {emoji:"🥕",word:"carrot"},
+      {emoji:"🥔",word:"potato"},
+      {emoji:"🍞",word:"bread"},
+      {emoji:"🥚",word:"egg"},
 
-let answer
+      {emoji:"👨",word:"father"},
+      {emoji:"👩",word:"mother"},
+      {emoji:"👦",word:"brother"},
+      {emoji:"👧",word:"sister"},
+      {emoji:"👴",word:"grandfather"},
+      {emoji:"👵",word:"grandmother"},
+      {emoji:"👶",word:"baby"},
+      {emoji:"👨‍🏫",word:"teacher"},
+      {emoji:"👨‍🎓",word:"student"},
+      {emoji:"👪",word:"family"},
 
-function newQuestion(){
+      {emoji:"📚",word:"book"},
+      {emoji:"✏️",word:"pencil"},
+      {emoji:"🖊️",word:"pen"},
+      {emoji:"🧽",word:"eraser"},
+      {emoji:"🎒",word:"bag"},
+      {emoji:"🪑",word:"chair"},
+      {emoji:"🖥️",word:"computer"},
+      {emoji:"🏫",word:"school"},
+      {emoji:"📖",word:"study"},
+      {emoji:"📝",word:"write"},
 
-const q=words[Math.floor(Math.random()*words.length)]
+      {emoji:"🔴",word:"red"},
+      {emoji:"🔵",word:"blue"},
+      {emoji:"🟡",word:"yellow"},
+      {emoji:"🟢",word:"green"},
+      {emoji:"⚫",word:"black"},
+      {emoji:"⚪",word:"white"},
+      {emoji:"🟠",word:"orange"},
+      {emoji:"🟣",word:"purple"},
+      {emoji:"🟤",word:"brown"},
+      {emoji:"🌈",word:"color"},
 
-answer=q.word
+      {emoji:"🚗",word:"car"},
+      {emoji:"🚲",word:"bike"},
+      {emoji:"🚆",word:"train"},
+      {emoji:"✈️",word:"plane"},
+      {emoji:"🚢",word:"ship"},
+      {emoji:"🚌",word:"bus"},
+      {emoji:"🚕",word:"taxi"},
+      {emoji:"🚓",word:"police"},
+      {emoji:"🚒",word:"fire"},
+      {emoji:"🚑",word:"ambulance"},
 
-document.getElementById("game").innerHTML=`
+      {emoji:"⚽",word:"ball"},
+      {emoji:"🪀",word:"toy"},
+      {emoji:"🎮",word:"game"},
+      {emoji:"🧸",word:"doll"},
+      {emoji:"🤖",word:"robot"},
+      {emoji:"🪁",word:"kite"},
+      {emoji:"🎲",word:"dice"},
+      {emoji:"🎯",word:"target"},
+      {emoji:"🏀",word:"basketball"},
+      {emoji:"🏓",word:"pingpong"},
 
-<div class="card">${q.emoji}</div>
+      {emoji:"☀️",word:"sun"},
+      {emoji:"🌙",word:"moon"},
+      {emoji:"⭐",word:"star"},
+      {emoji:"☁️",word:"cloud"},
+      {emoji:"🌧️",word:"rain"},
+      {emoji:"❄️",word:"snow"},
+      {emoji:"🌈",word:"rainbow"},
+      {emoji:"🌳",word:"tree"},
+      {emoji:"🌸",word:"flower"},
+      {emoji:"🌿",word:"grass"},
 
-<button onclick="check('cat')">cat</button>
-<button onclick="check('dog')">dog</button>
-<button onclick="check('bird')">bird</button>
-<button onclick="check('fish')">fish</button>
-<button onclick="check('rabbit')">rabbit</button>
+      {emoji:"👀",word:"eye"},
+      {emoji:"👂",word:"ear"},
+      {emoji:"👃",word:"nose"},
+      {emoji:"👄",word:"mouth"},
+      {emoji:"🤚",word:"hand"},
+      {emoji:"🦶",word:"foot"},
+      {emoji:"🦵",word:"leg"},
+      {emoji:"💪",word:"arm"},
+      {emoji:"🙂",word:"face"},
+      {emoji:"🧍",word:"body"}
+    ];
 
-`
+    let answer = "";
+    let score = 0;
 
-}
+    function speakWord(word){
+      if(!window.speechSynthesis) return;
 
-function check(w){
+      window.speechSynthesis.cancel();
 
-if(w==answer){
-alert("Correct!")
-}else{
-alert("Try again")
-}
+      const utter = new SpeechSynthesisUtterance(word);
+      utter.lang = "en-US";
+      utter.rate = 0.9;
+      utter.pitch = 1;
 
-newQuestion()
+      setTimeout(() => {
+        window.speechSynthesis.speak(utter);
+      }, 80);
+    }
 
-}
+    function shuffle(array){
+      const arr = [...array];
+      for(let i = arr.length - 1; i > 0; i--){
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
 
-newQuestion()
+    function getOptions(correctWord){
+      const others = shuffle(words.filter(w => w.word !== correctWord)).slice(0, 4);
+      return shuffle([{ word: correctWord }, ...others]).map(item => item.word);
+    }
 
-</script>
+    function newQuestion(){
+      const q = words[Math.floor(Math.random() * words.length)];
+      answer = q.word;
+      const options = getOptions(q.word);
 
+      document.getElementById("game").innerHTML = `
+        <div class="card">${q.emoji}</div>
+        <div class="top-row">
+          <button class="speak-btn" onclick="speakWord('${q.word}')">🔊 聽發音</button>
+        </div>
+        <div class="buttons">
+          ${options.map(word => `<button onclick="checkAnswer('${word}')">${word}</button>`).join("")}
+        </div>
+      `;
+    }
+
+    function checkAnswer(word){
+      speakWord(word);
+
+      if(word === answer){
+        score++;
+        document.getElementById("score").innerText = "Score: " + score;
+
+        setTimeout(() => {
+          alert("Correct! 🎉");
+          speakWord(answer);
+          setTimeout(() => {
+            newQuestion();
+          }, 300);
+        }, 150);
+      } else {
+        setTimeout(() => {
+          alert("Try again!");
+        }, 150);
+      }
+    }
+
+    // 喚醒 iPhone 語音
+    document.body.addEventListener("click", function initVoice(){
+      if(window.speechSynthesis){
+        const u = new SpeechSynthesisUtterance("");
+        u.volume = 0;
+        window.speechSynthesis.speak(u);
+      }
+      document.body.removeEventListener("click", initVoice);
+    }, { once: true });
+
+    newQuestion();
+  </script>
 </body>
 </html>
