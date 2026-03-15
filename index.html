@@ -1,99 +1,196 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-Hant">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Jimmy Kids English</title>
-
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jimmy Kids English</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background: #f4f6ff;
+      color: #1f2937;
+    }
+    h1 {
+      color: #4a7cff;
+      font-size: 40px;
+      margin: 10px 0;
+    }
+    #score {
+      font-size: 22px;
+      margin: 10px 0 20px;
+    }
+    #hint {
+      font-size: 14px;
+      color: #6b7280;
+      margin-bottom: 16px;
+    }
+    .card {
+      font-size: 90px;
+      margin: 30px 0 10px;
+    }
+    .buttons {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+      max-width: 760px;
+      margin: 0 auto;
+    }
+    button {
+      padding: 14px 20px;
+      font-size: 20px;
+      border: none;
+      border-radius: 12px;
+      background: #4a7cff;
+      color: white;
+      min-width: 120px;
+      cursor: pointer;
+    }
+    .speak {
+      background: #16a34a;
+      margin-bottom: 15px;
+    }
+    .small {
+      margin-top: 20px;
+      font-size: 13px;
+      color: #94a3b8;
+    }
+  </style>
 </head>
-
 <body>
 
-<h1>Jimmy Kids English</h1>
+  <h1>Jimmy Kids English</h1>
+  <div id="score">Score: 0</div>
+  <div id="hint">先按 🔊 Listen，再選答案</div>
+  <div id="game"></div>
+  <div class="small">Jimmy Studio · Grade 3 English Game</div>
 
-<div id="score">Score: 0</div>
+  <script>
+    const words = [
+      {emoji:"🐱",word:"cat"},
+      {emoji:"🐶",word:"dog"},
+      {emoji:"🐦",word:"bird"},
+      {emoji:"🐟",word:"fish"},
+      {emoji:"🐰",word:"rabbit"},
+      {emoji:"🦆",word:"duck"},
+      {emoji:"🐷",word:"pig"},
+      {emoji:"🐮",word:"cow"},
+      {emoji:"🐴",word:"horse"},
+      {emoji:"🐑",word:"sheep"},
 
-<div id="game"></div>
+      {emoji:"🍎",word:"apple"},
+      {emoji:"🍌",word:"banana"},
+      {emoji:"🍊",word:"orange"},
+      {emoji:"🍇",word:"grape"},
+      {emoji:"🍓",word:"strawberry"},
+      {emoji:"🍉",word:"watermelon"},
+      {emoji:"🥕",word:"carrot"},
+      {emoji:"🥔",word:"potato"},
+      {emoji:"🍞",word:"bread"},
+      {emoji:"🥚",word:"egg"},
 
-<script src="words.js"></script>
+      {emoji:"👨",word:"father"},
+      {emoji:"👩",word:"mother"},
+      {emoji:"👦",word:"brother"},
+      {emoji:"👧",word:"sister"},
+      {emoji:"👴",word:"grandfather"},
+      {emoji:"👵",word:"grandmother"},
+      {emoji:"👶",word:"baby"},
+      {emoji:"👨‍🏫",word:"teacher"},
+      {emoji:"👨‍🎓",word:"student"},
+      {emoji:"👪",word:"family"},
 
-<script>
+      {emoji:"📚",word:"book"},
+      {emoji:"✏️",word:"pencil"},
+      {emoji:"🖊️",word:"pen"},
+      {emoji:"🧽",word:"eraser"},
+      {emoji:"🎒",word:"bag"},
+      {emoji:"🪑",word:"chair"},
+      {emoji:"🖥️",word:"computer"},
+      {emoji:"🏫",word:"school"},
+      {emoji:"📖",word:"study"},
+      {emoji:"📝",word:"write"},
 
-let answer=""
-let score=0
+      {emoji:"🔴",word:"red"},
+      {emoji:"🔵",word:"blue"},
+      {emoji:"🟡",word:"yellow"},
+      {emoji:"🟢",word:"green"},
+      {emoji:"⚫",word:"black"},
+      {emoji:"⚪",word:"white"},
+      {emoji:"🟠",word:"orange"},
+      {emoji:"🟣",word:"purple"},
+      {emoji:"🟤",word:"brown"},
+      {emoji:"🌈",word:"color"}
+    ];
 
-function speak(word){
+    let answer = "";
+    let score = 0;
 
-const u = new SpeechSynthesisUtterance(word)
-u.lang="en-US"
-speechSynthesis.cancel()
-speechSynthesis.speak(u)
+    function shuffle(array) {
+      const arr = [...array];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
 
-}
+    function speak(word) {
+      try {
+        if (!window.speechSynthesis) return;
+        window.speechSynthesis.cancel();
+        const u = new SpeechSynthesisUtterance(word);
+        u.lang = "en-US";
+        u.rate = 0.9;
+        u.pitch = 1;
+        window.speechSynthesis.speak(u);
+      } catch (e) {
+        console.log("speech error", e);
+      }
+    }
 
-function shuffle(a){
-return [...a].sort(()=>Math.random()-0.5)
-}
+    function newQuestion() {
+      const q = words[Math.floor(Math.random() * words.length)];
+      answer = q.word;
 
-function newQuestion(){
+      let options = shuffle(words).slice(0, 4).map(w => w.word);
+      if (!options.includes(answer)) {
+        options[Math.floor(Math.random() * 4)] = answer;
+      }
+      options = shuffle(options);
 
-const q = words[Math.floor(Math.random()*words.length)]
+      document.getElementById("game").innerHTML = `
+        <div class="card">${q.emoji}</div>
+        <button class="speak" onclick="speak('${q.word}')">🔊 Listen</button>
+        <div class="buttons">
+          ${options.map(w => `<button onclick="checkAnswer('${w}')">${w}</button>`).join("")}
+        </div>
+      `;
+    }
 
-answer = q.word
+    function checkAnswer(word) {
+      if (word === answer) {
+        score++;
+        document.getElementById("score").innerText = "Score: " + score;
+        speak(word);
+        setTimeout(() => {
+          alert("Correct! 🎉");
+          newQuestion();
+        }, 250);
+      } else {
+        speak(word);
+        setTimeout(() => {
+          alert("Try again");
+        }, 250);
+      }
+    }
 
-const options = shuffle(words).slice(0,4).map(w=>w.word)
-
-if(!options.includes(answer)){
-options[Math.floor(Math.random()*4)] = answer
-}
-
-document.getElementById("game").innerHTML = `
-
-<div class="card">${q.emoji}</div>
-
-<button class="speak" onclick="speak('${q.word}')">
-🔊 Listen
-</button>
-
-<div class="buttons">
-
-${options.map(w=>`
-<button onclick="check('${w}')">${w}</button>
-`).join("")}
-
-</div>
-
-`
-
-}
-
-function check(word){
-
-speak(word)
-
-if(word==answer){
-
-score++
-
-document.getElementById("score").innerText="Score: "+score
-
-setTimeout(()=>{
-alert("Correct!")
-newQuestion()
-},200)
-
-}else{
-
-alert("Try again")
-
-}
-
-}
-
-newQuestion()
-
-</script>
+    newQuestion();
+  </script>
 
 </body>
 </html>
